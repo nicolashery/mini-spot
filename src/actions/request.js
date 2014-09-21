@@ -5,7 +5,6 @@ var request = {};
 
 request.reset = function(keys) {
   keys = toArray(keys);
-  keys.push('req');
   db.set(keys, null);
 };
 

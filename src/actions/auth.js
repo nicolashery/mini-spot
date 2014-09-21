@@ -7,34 +7,61 @@ var RoutingActions = require('./routing');
 var auth = {};
 
 auth.login = function(user, options) {
-  if (db.get(['auth', 'req', 'status']) === 'pending') {
+  if (db.get(['auth', 'reqs', 'login', 'status']) === 'pending') {
     return null;
   }
 
   var req = request.create();
   var handleError = function(err) {
-    db.set('auth', m.hash_map(
-      'req', m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err))),
-      'data', null
-    ));
+    db.transact([
+      [['auth', 'reqs', 'login'], m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))],
+      [['auth', 'data'], null]
+    ]);
   };
 
-  db.set(['auth', 'req'], req);
+  db.set(['auth', 'reqs', 'login'], req);
   api.user.login(user, options, function(err) {
     if (err) return handleError(err);
 
     api.user.get(function(err, user) {
       if (err) return handleError(err);
 
-      db.set('auth', m.hash_map(
-        'req', m.assoc(req, 'status', 'success'),
-        'data', m.js_to_clj({
+      db.transact([
+        [['auth', 'reqs', 'login'], m.assoc(req, 'status', 'success')],
+        [['auth', 'data'], m.js_to_clj({
           token: api.token,
           user: user
-        })
-      ));
+        })],
+        [['auth', 'reqs', 'logout'], null]
+      ]);
       RoutingActions.navigateAfterLogin();
     });
+  });
+
+  return req;
+};
+
+auth.logout = function() {
+  if (db.get(['auth', 'reqs', 'logout', 'status']) === 'pending') {
+    return null;
+  }
+
+  var req = request.create();
+  var handleError = function(err) {
+    db.set(['auth', 'reqs', 'logout'],
+      m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))
+    );
+  };
+
+  db.set(['auth', 'reqs', 'logout'], req);
+  api.user.logout(function(err) {
+    if (err) return handleError(err);
+
+    db.transact([
+      [['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')],
+      [['auth', 'data'], null]
+    ]);
+    RoutingActions.navigateAfterLogout();
   });
 
   return req;

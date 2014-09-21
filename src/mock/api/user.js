@@ -194,7 +194,7 @@ var patch = function(mock, api) {
         api.log('[mock] Logout failed');
       }
       callback(err);
-    }, getDelayFor('api.user.logout'));
+    }, getDelayFor('api.user.logout') || 1000);
   };
 
   api.user.signup = function(user, callback) {

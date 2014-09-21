@@ -11,7 +11,7 @@ var debug = require('bows')('Login');
 var Login = React.createClass({
   mixins: [DbMixin(db)],
   stateFromDb: {
-    req: ['auth', 'req'],
+    loginReq: ['auth', 'reqs', 'login'],
     redirectAfterLogin: 'redirectAfterLogin'
   },
 
@@ -56,7 +56,7 @@ var Login = React.createClass({
     var disabled;
     var text = 'Login';
 
-    if (m.get(this.state.req, 'status') === 'pending') {
+    if (m.get(this.state.loginReq, 'status') === 'pending') {
       disabled = true;
       text = 'Logging in...';
     }
@@ -82,7 +82,7 @@ var Login = React.createClass({
   },
 
   renderError: function() {
-    var error = m.get(this.state.req, 'error');
+    var error = m.get(this.state.loginReq, 'error');
     if (!error) {
       return null;
     }

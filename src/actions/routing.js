@@ -52,4 +52,8 @@ routing.navigateAfterLogin = function() {
   this.navigateTo(router.defaultAuthRoute());
 };
 
+routing.navigateAfterLogout = function() {
+  this.navigateTo(router.defaultNoAuthRoute());
+};
+
 module.exports = routing;

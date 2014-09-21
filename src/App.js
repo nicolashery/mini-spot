@@ -39,7 +39,7 @@ router.onRouteChange = function(route) {
   var path = route && route.path;
 
   if (path === '/login') {
-    RequestActions.reset('auth');
+    RequestActions.reset('auth', 'reqs', 'login');
   }
 };
 
