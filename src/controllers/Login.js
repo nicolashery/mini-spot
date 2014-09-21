@@ -4,13 +4,15 @@ var m = require('mori');
 var db = require('../state/db');
 var DbMixin = require('../lib/DbMixin');
 var AuthActions = require('../actions/auth');
+var uriFromRoute = require('../router').uriFromRoute;
 
 var debug = require('bows')('Login');
 
 var Login = React.createClass({
   mixins: [DbMixin(db)],
   stateFromDb: {
-    req: ['auth', 'req']
+    req: ['auth', 'req'],
+    redirectAfterLogin: 'redirectAfterLogin'
   },
 
   componentDidMount: function() {
@@ -25,6 +27,7 @@ var Login = React.createClass({
     debug('render');
     return (
       <div>
+        {this.renderRedirectAfterLogin()}
         <p>Hint: demo/demo</p>
         <form>
           <p><input ref="username" placeholder="username"/></p>
@@ -33,6 +36,19 @@ var Login = React.createClass({
         </form>
         <p>{this.renderError()}</p>
       </div>
+    );
+  },
+
+  renderRedirectAfterLogin: function() {
+    if (!this.state.redirectAfterLogin) {
+      return null;
+    }
+
+    return (
+      <p>
+        <span>After logging in you will be redirected to </span>
+        <strong>{uriFromRoute(m.clj_to_js(this.state.redirectAfterLogin))}</strong>
+      </p>
     );
   },
 
