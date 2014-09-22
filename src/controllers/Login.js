@@ -32,6 +32,7 @@ var Login = React.createClass({
         <form>
           <p><input ref="username" placeholder="username"/></p>
           <p><input ref="password" placeholder="password"/></p>
+          <p><input ref="remember" type="checkbox"/><span> Remember me</span></p>
           <p>{this.renderButton()}</p>
         </form>
         <p>{this.renderError()}</p>
@@ -75,10 +76,11 @@ var Login = React.createClass({
     e.preventDefault();
     var username = this.refs.username.getDOMNode().value;
     var password = this.refs.password.getDOMNode().value;
+    var remember = this.refs.remember.getDOMNode().checked;
     AuthActions.login({
       username: username,
       password: password
-    });
+    }, {remember: remember});
   },
 
   renderError: function() {
