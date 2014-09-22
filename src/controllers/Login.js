@@ -20,7 +20,7 @@ var Login = React.createClass({
   },
 
   componentWillUnmount: function() {
-    debug('componentDidMount');
+    debug('componentWillUnmount');
   },
 
   render: function() {

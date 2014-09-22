@@ -6,7 +6,9 @@ var router = require('./router');
 var DbMixin = require('./lib/DbMixin');
 var Navbar = require('./controllers/Navbar');
 var Login = require('./controllers/Login');
+var Users = require('./controllers/Users');
 var RequestActions = require('./actions/request');
+var UserActions = require('./actions/user');
 
 var debug = require('bows')('App');
 
@@ -35,11 +37,16 @@ router.notFoundRoute = function() {
   return {path: '/404'};
 };
 
-router.onRouteChange = function(route) {
+router.beforeRouteChange = function(route) {
   var path = route && route.path;
 
   if (path === '/login') {
-    RequestActions.reset('auth', 'reqs', 'login');
+    RequestActions.reset(['auth', 'reqs', 'login']);
+  }
+
+  if (path ==='/dashboard') {
+    RequestActions.reset(['users', 'reqs', 'fetch']);
+    UserActions.fetch();
   }
 };
 
@@ -54,7 +61,7 @@ var App = React.createClass({
   },
 
   componentWillUnmount: function() {
-    debug('componentDidMount');
+    debug('componentWillUnmount');
   },
 
   render: function() {
@@ -79,7 +86,12 @@ var App = React.createClass({
     }
 
     if (path === '/dashboard') {
-      return <p>Dashboard</p>;
+      return (
+        <div>
+          <h2>Dashboard</h2>
+          <Users />
+        </div>
+      );
     }
 
     if (path === '/404') {

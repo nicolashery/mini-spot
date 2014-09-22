@@ -4,9 +4,9 @@ var db = require('../state/db');
 var request = require('../lib/request');
 var RoutingActions = require('./routing');
 
-var auth = {};
+var ns = {};
 
-auth.login = function(user, options) {
+ns.login = function(user, options) {
   if (db.get(['auth', 'reqs', 'login', 'status']) === 'pending') {
     return null;
   }
@@ -41,7 +41,7 @@ auth.login = function(user, options) {
   return req;
 };
 
-auth.logout = function() {
+ns.logout = function() {
   if (db.get(['auth', 'reqs', 'logout', 'status']) === 'pending') {
     return null;
   }
@@ -57,9 +57,12 @@ auth.logout = function() {
   api.user.logout(function(err) {
     if (err) return handleError(err);
 
+    // Better way here would be to do something like
+    // db.reset({...}), or db.set({...})
     db.transact([
       [['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')],
-      [['auth', 'data'], null]
+      [['auth', 'data'], null],
+      ['users', null]
     ]);
     RoutingActions.navigateAfterLogout();
   });
@@ -67,4 +70,4 @@ auth.logout = function() {
   return req;
 };
 
-module.exports = auth;
+module.exports = ns;

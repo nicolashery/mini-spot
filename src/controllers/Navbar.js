@@ -19,7 +19,7 @@ var Navbar = React.createClass({
   },
 
   componentWillUnmount: function() {
-    debug('componentDidMount');
+    debug('componentWillUnmount');
   },
 
   render: function() {

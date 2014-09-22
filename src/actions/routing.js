@@ -4,9 +4,9 @@ var db = require('../state/db');
 
 var debug = require('bows')('RoutingActions');
 
-var routing = {};
+var ns = {};
 
-routing.navigateTo = function(route) {
+ns.navigateTo = function(route) {
   var path = route && route.path;
   debug('navigateTo', route);
   var tx = [];
@@ -35,13 +35,13 @@ routing.navigateTo = function(route) {
     route = router.defaultAuthRoute();
   }
 
+  router.beforeRouteChange(route);
   router.updateBrowserUri(route);
-  router.onRouteChange(route);
   tx.push(['route', m.js_to_clj(route)]);
   db.transact(tx);
 };
 
-routing.navigateAfterLogin = function() {
+ns.navigateAfterLogin = function() {
   var redirectAfterLogin = db.get('redirectAfterLogin');
   if (redirectAfterLogin) {
     debug('logged in, redirecting to previous route');
@@ -52,8 +52,8 @@ routing.navigateAfterLogin = function() {
   this.navigateTo(router.defaultAuthRoute());
 };
 
-routing.navigateAfterLogout = function() {
+ns.navigateAfterLogout = function() {
   this.navigateTo(router.defaultNoAuthRoute());
 };
 
-module.exports = routing;
+module.exports = ns;

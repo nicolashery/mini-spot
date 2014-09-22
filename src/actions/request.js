@@ -1,11 +1,11 @@
 var db = require('../state/db');
 var toArray = require('../lib/utils').toArray;
 
-var request = {};
+var ns = {};
 
-request.reset = function(keys) {
+ns.reset = function(keys) {
   keys = toArray(keys);
   db.set(keys, null);
 };
 
-module.exports = request;
+module.exports = ns;

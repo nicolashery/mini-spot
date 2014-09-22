@@ -43,16 +43,11 @@ var patch = function(mock, api) {
       }
 
       var userId = api.userId;
-      var groups = data.groups[userId];
-      if (_.isEmpty(groups)) {
-        return callback(null, []);
-      }
+      var groups = {};
+      groups[userId] = {root: {}};
+      groups = _.assign(groups, data.groups[userId]);
 
       var patients = _.reduce(groups, function(result, permissions, groupId) {
-        if (groupId === userId) {
-          return result;
-        }
-
         var person = data.users[groupId];
         if (!personUtils.isPatient(person)) {
           return result;
@@ -66,7 +61,7 @@ var patch = function(mock, api) {
       }, []);
 
       callback(null, patients);
-    }, getDelayFor('api.patient.getall'));
+    }, getDelayFor('api.patient.getall') || 1000);
   };
 
   api.patient.get = function(patientId, callback) {
