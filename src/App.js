@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
+var merge = require('react/lib/merge');
 var m = require('mori');
 var db = require('./state/db');
 var router = require('./router');
@@ -17,6 +18,8 @@ router.setMatchedPaths([
   '/login',
   '/about',
   '/dashboard',
+  '/user/:userId',
+  '/user/:userId/data',
   '/404'
 ]);
 
@@ -35,6 +38,16 @@ router.defaultNoAuthRoute = function() {
 
 router.notFoundRoute = function() {
   return {path: '/404'};
+};
+
+router.applyRedirects = function(route) {
+  var path = route && route.path;
+
+  if (path === '/user/:userId') {
+    return merge(route, {path: '/user/:userId/data'});
+  }
+
+  return route;
 };
 
 router.beforeRouteChange = function(route) {
@@ -90,6 +103,14 @@ var App = React.createClass({
         <div>
           <h2>Dashboard</h2>
           <Users />
+        </div>
+      );
+    }
+
+    if (path === '/user/:userId/data') {
+      return (
+        <div>
+          <h2>Data</h2>
         </div>
       );
     }

@@ -20,9 +20,7 @@ module.exports = function(callback) {
         m.get_in(newState, ['auth', 'reqs', 'load', 'status']) === 'success') {
       router.start();
       callback();
-      console.log(db._watchers.length);
       db.unlisten(onDbChange);
-      console.log(db._watchers.length);
     }
   }
   db.listen(onDbChange);

@@ -35,6 +35,8 @@ ns.navigateTo = function(route) {
     route = router.defaultAuthRoute();
   }
 
+  route = router.applyRedirects(route);
+
   router.beforeRouteChange(route);
   router.updateBrowserUri(route);
   tx.push(['route', m.js_to_clj(route)]);
