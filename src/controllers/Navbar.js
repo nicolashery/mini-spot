@@ -9,9 +9,11 @@ var debug = require('bows')('Navbar');
 
 var Navbar = React.createClass({
   mixins: [DbMixin(db)],
-  stateFromDb: {
-    user: ['auth', 'data', 'user'],
-    logoutReq: ['auth', 'reqs', 'logout']
+  stateFromDb: function() {
+    return {
+      user: ['auth', 'data', 'user'],
+      logoutReq: ['auth', 'reqs', 'logout']
+    };
   },
 
   componentDidMount: function() {

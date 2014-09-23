@@ -38,7 +38,7 @@ var patch = function(mock, api) {
 
     setTimeout(function() {
       callback(null, patientData);
-    }, getDelayFor('api.patientdata.get'));
+    }, getDelayFor('api.patientdata.get') || 1000);
   };
 
   return api;

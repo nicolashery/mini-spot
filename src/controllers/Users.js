@@ -9,9 +9,11 @@ var debug = require('bows')('Users');
 
 var Users = React.createClass({
   mixins: [DbMixin(db)],
-  stateFromDb: {
-    users: ['users', 'data'],
-    fetchReq: ['users', 'reqs', 'fetch']
+  stateFromDb: function() {
+    return {
+      users: ['users', 'data'],
+      fetchReq: ['users', 'reqs', 'fetch']
+    };
   },
 
   componentDidMount: function() {

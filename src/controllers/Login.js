@@ -10,9 +10,11 @@ var debug = require('bows')('Login');
 
 var Login = React.createClass({
   mixins: [DbMixin(db)],
-  stateFromDb: {
-    loginReq: ['auth', 'reqs', 'login'],
-    redirectAfterLogin: 'redirectAfterLogin'
+  stateFromDb: function() {
+    return {
+      loginReq: ['auth', 'reqs', 'login'],
+      redirectAfterLogin: 'redirectAfterLogin'
+    };
   },
 
   componentDidMount: function() {

@@ -2,14 +2,19 @@
 var React = require('react');
 var merge = require('react/lib/merge');
 var m = require('mori');
+
 var db = require('./state/db');
 var router = require('./router');
 var DbMixin = require('./lib/DbMixin');
+
 var Navbar = require('./controllers/Navbar');
 var Login = require('./controllers/Login');
 var Users = require('./controllers/Users');
+var DeviceData = require('./controllers/DeviceData');
+
 var RequestActions = require('./actions/request');
 var UserActions = require('./actions/user');
+var DeviceDataActions = require('./actions/deviceData');
 
 var debug = require('bows')('App');
 
@@ -61,12 +66,19 @@ router.beforeRouteChange = function(route) {
     RequestActions.reset(['users', 'reqs', 'fetch']);
     UserActions.fetch();
   }
+
+  if (path ==='/user/:userId/data') {
+    var userId = route.params && route.params.userId;
+    var reqKey = ['deviceData', userId, 'fetch'].join(':');
+    RequestActions.reset(['reqs', reqKey]);
+    DeviceDataActions.fetch(userId);
+  }
 };
 
 var App = React.createClass({
   mixins: [DbMixin(db)],
-  stateFromDb: {
-    route: 'route'
+  stateFromDb: function() {
+    return {route: 'route'};
   },
 
   componentDidMount: function() {
@@ -111,6 +123,8 @@ var App = React.createClass({
       return (
         <div>
           <h2>Data</h2>
+          <DeviceData
+            userId={m.get_in(this.state.route, ['params', 'userId'])} />
         </div>
       );
     }
