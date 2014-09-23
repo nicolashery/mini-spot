@@ -58,13 +58,12 @@ ns.logout = function() {
   api.user.logout(function(err) {
     if (err) return handleError(err);
 
-    // Better way here would be to do something like
-    // db.reset({...}), or db.set({...})
-    db.transact([
-      [['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')],
-      [['auth', 'data'], null],
-      ['users', null]
-    ]);
+    // Reset state
+    var state = m.js_to_clj({auth: {}});
+    state = m.assoc_in(state,
+      ['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')
+    );
+    db.set(state);
     RoutingActions.navigateAfterLogout();
   });
 
