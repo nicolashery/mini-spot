@@ -36,23 +36,13 @@ Db.prototype = merge(Db.prototype, {
   },
 
   set: function (keys, value) {
-    var oldState, newState;
-    if (!value && m.is_map(keys)) {
-      oldState = this._state;
-      newState = keys;
-    }
-    else {
-      oldState = this._state;
-      newState = this._set(this._state, keys, value);
-    }
+    var oldState = this._state;
+    var newState = this._set(this._state, keys, value);
     this._updateState(newState);
     this._notify(oldState, newState);
   },
 
   get: function (keys) {
-    if (!keys) {
-      return this._state;
-    }
     if (typeof keys === 'string') {
       return m.get(this._state, keys);
     }
@@ -70,6 +60,16 @@ Db.prototype = merge(Db.prototype, {
     });
     this._updateState(newState);
     this._notify(oldState, newState);
+  },
+
+  reset: function(newState) {
+    var oldState = this._state;
+    this._resetState(newState);
+    this._notify(oldState, newState);
+  },
+
+  snapshot: function() {
+    return this._state;
   },
 
   listen: function (watcher) {

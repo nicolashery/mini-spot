@@ -58,12 +58,11 @@ ns.logout = function() {
   api.user.logout(function(err) {
     if (err) return handleError(err);
 
-    // Reset state
     var state = m.js_to_clj({auth: {}});
     state = m.assoc_in(state,
       ['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')
     );
-    db.set(state);
+    db.reset(state);
     RoutingActions.navigateAfterLogout();
   });
 
