@@ -59,18 +59,18 @@ router.beforeRouteChange = function(route) {
   var path = route && route.path;
 
   if (path === '/login') {
-    RequestActions.reset(['auth', 'reqs', 'login']);
+    RequestActions.reset('auth:login');
   }
 
   if (path ==='/dashboard') {
-    RequestActions.reset(['users', 'reqs', 'fetch']);
+    RequestActions.reset('users:fetch');
     UserActions.fetch();
   }
 
   if (path ==='/user/:userId/data') {
     var userId = route.params && route.params.userId;
     var reqKey = ['deviceData', userId, 'fetch'].join(':');
-    RequestActions.reset(['reqs', reqKey]);
+    RequestActions.reset(reqKey);
     DeviceDataActions.fetch(userId);
   }
 };

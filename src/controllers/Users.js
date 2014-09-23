@@ -11,8 +11,8 @@ var Users = React.createClass({
   mixins: [DbMixin(db)],
   stateFromDb: function() {
     return {
-      users: ['users', 'data'],
-      fetchReq: ['users', 'reqs', 'fetch']
+      users: 'users',
+      fetchReq: ['reqs', 'users:fetch']
     };
   },
 

@@ -12,7 +12,7 @@ var Login = React.createClass({
   mixins: [DbMixin(db)],
   stateFromDb: function() {
     return {
-      loginReq: ['auth', 'reqs', 'login'],
+      loginReq: ['reqs', 'auth:login'],
       redirectAfterLogin: 'redirectAfterLogin'
     };
   },
@@ -91,7 +91,7 @@ var Login = React.createClass({
       return null;
     }
 
-    return JSON.stringify(m.clj_to_js(error));
+    return 'Login failed. ' + m.get(error, 'response');
   }
 });
 

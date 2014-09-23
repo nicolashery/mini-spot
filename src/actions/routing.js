@@ -14,7 +14,7 @@ ns.navigateTo = function(route) {
   var routeFound = route && router.isRouteMatched(route);
   var isDefaultRoute = (path === '/');
   var routeRequiresAuth = route && router.requiresAuth(route);
-  var userIsAuthenticated = Boolean(db.get(['auth', 'data', 'token']));
+  var userIsAuthenticated = Boolean(db.get(['auth', 'token']));
 
   if (!routeFound) {
     debug('route not found, redirecting');

@@ -11,8 +11,8 @@ var Navbar = React.createClass({
   mixins: [DbMixin(db)],
   stateFromDb: function() {
     return {
-      user: ['auth', 'data', 'user'],
-      logoutReq: ['auth', 'reqs', 'logout']
+      user: ['auth', 'user'],
+      logoutReq: ['reqs', 'auth:logout']
     };
   },
 

@@ -16,8 +16,8 @@ module.exports = function(callback) {
   api = mock.patchApi(api);
 
   function onDbChange(oldState, newState) {
-    if (m.get_in(oldState, ['auth', 'reqs', 'load', 'status']) === 'pending' &&
-        m.get_in(newState, ['auth', 'reqs', 'load', 'status']) === 'success') {
+    if (m.get_in(oldState, ['reqs', 'auth:load', 'status']) === 'pending' &&
+        m.get_in(newState, ['reqs', 'auth:load', 'status']) === 'success') {
       router.start();
       callback();
       db.unlisten(onDbChange);

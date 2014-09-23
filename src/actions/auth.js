@@ -8,9 +8,7 @@ var RoutingActions = require('./routing');
 var ns = {};
 
 ns._saveSession = function() {
-  var state = m.hash_map(
-    'auth', m.hash_map('data', db.get(['auth', 'data']))
-  );
+  var state = m.hash_map('auth', db.get('auth'));
   persist.save(state);
 };
 
@@ -19,31 +17,33 @@ ns._destroySession = function() {
 };
 
 ns.load = function() {
-  if (db.get(['auth', 'reqs', 'load', 'status']) === 'pending') {
+  var reqKey = ['auth', 'load'].join(':');
+
+  if (db.get(['reqs', reqKey, 'status']) === 'pending') {
     return null;
   }
 
   var req = request.create();
   var handleError = function(err) {
-    db.set(['auth', 'reqs', 'load'],
+    db.set(['reqs', reqKey],
       m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))
     );
   };
 
   var savedState = persist.load();
-  var token = m.get_in(savedState, ['auth', 'data', 'token']);
-  db.set(['auth', 'reqs', 'load'], req);
+  var token = m.get_in(savedState, ['auth', 'token']);
+  db.set(['reqs', reqKey], req);
 
   api.init(token, function(err, auth) {
     if (err) return handleError(err);
 
     var tx = [
-      [['auth', 'reqs', 'load'], m.assoc(req, 'status', 'success')]
+      [['reqs', reqKey], m.assoc(req, 'status', 'success')]
     ];
     var afterDbUpdate = function() {};
 
     if (auth) {
-      tx.push([['auth', 'data'], m.js_to_clj(auth)]);
+      tx.push(['auth', m.js_to_clj(auth)]);
       afterDbUpdate = ns._saveSession;
     }
     else {
@@ -58,19 +58,21 @@ ns.load = function() {
 };
 
 ns.login = function(user, options) {
-  if (db.get(['auth', 'reqs', 'login', 'status']) === 'pending') {
+  var reqKey = ['auth', 'login'].join(':');
+
+  if (db.get(['reqs', reqKey, 'status']) === 'pending') {
     return null;
   }
 
   var req = request.create();
   var handleError = function(err) {
     db.transact([
-      [['auth', 'reqs', 'login'], m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))],
-      [['auth', 'data'], null]
+      [['reqs', reqKey], m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))],
+      ['auth', null]
     ]);
   };
 
-  db.set(['auth', 'reqs', 'login'], req);
+  db.set(['reqs', reqKey], req);
   api.user.login(user, function(err) {
     if (err) return handleError(err);
 
@@ -78,13 +80,13 @@ ns.login = function(user, options) {
       if (err) return handleError(err);
 
       db.transact([
-        [['auth', 'reqs', 'login'], m.assoc(req, 'status', 'success')],
-        [['auth', 'data'], m.js_to_clj({
+        [['reqs', reqKey], m.assoc(req, 'status', 'success')],
+        ['auth', m.js_to_clj({
           token: api.token,
-          user: user
+          user: user,
+          persist: options.remember
         })],
-        [['auth', 'persist'], options.remember],
-        [['auth', 'reqs', 'logout'], null]
+        [['reqs', 'auth:logout'], null]
       ]);
 
       if (options.remember) {
@@ -98,24 +100,25 @@ ns.login = function(user, options) {
 };
 
 ns.logout = function() {
-  if (db.get(['auth', 'reqs', 'logout', 'status']) === 'pending') {
+  var reqKey = ['auth', 'logout'].join(':');
+
+  if (db.get(['reqs', reqKey, 'status']) === 'pending') {
     return null;
   }
 
   var req = request.create();
   var handleError = function(err) {
-    db.set(['auth', 'reqs', 'logout'],
+    db.set(['reqs', reqKey],
       m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))
     );
   };
 
-  db.set(['auth', 'reqs', 'logout'], req);
+  db.set(['reqs', reqKey], req);
   api.user.logout(function(err) {
     if (err) return handleError(err);
 
-    var state = m.js_to_clj({auth: {}});
-    state = m.assoc_in(state,
-      ['auth', 'reqs', 'logout'], m.assoc(req, 'status', 'success')
+    var state = m.assoc_in(m.hash_map(),
+      ['reqs', reqKey], m.assoc(req, 'status', 'success')
     );
     db.reset(state);
 
