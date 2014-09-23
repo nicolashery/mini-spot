@@ -17,9 +17,6 @@ var _ = require('lodash');
 
 var common = require('./common');
 
-var userIdLocalKey = 'mockUserId';
-var tokenLocalKey = 'mockAuthToken';
-
 var userIdSize = 10;
 var tokenIdSize = 16;
 
@@ -36,14 +33,9 @@ var patch = function(mock, api) {
   var getParam = mock.getParam;
   var getDelayFor = mock.getDelayFor;
 
-  function isMatchedTokenPair(userId, token, pair) {
-    return pair.userid === userId && pair.token === token;
-  }
-
-  function isValidToken(userId, token) {
-    var result = _.find(data.tokens,
-      isMatchedTokenPair.bind(null, userId, token));
-    return Boolean(result);
+  function userForToken(token) {
+    var pair = _.find(data.tokens, {token: token});
+    return pair && data.users[pair.userid];
   }
 
   function addToken(userId, token) {
@@ -53,9 +45,8 @@ var patch = function(mock, api) {
     });
   }
 
-  function destroyToken(userId, token) {
-    data.tokens = _.reject(data.tokens,
-      isMatchedTokenPair.bind(null, userId, token));
+  function destroyToken(token) {
+    data.tokens = _.reject(data.tokens, {token: token});
   }
 
   function getUserWithCredentials(username, password) {
@@ -73,28 +64,16 @@ var patch = function(mock, api) {
     data.users[user.userid] = user;
   }
 
-  function saveSession(userId, token, options) {
-    options = options || {};
-
+  function saveSession(userId, token) {
+    addToken(userId, token);
     api.userId = userId;
     api.token = token;
-    if (options.remember) {
-      var localStorage = window.localStorage;
-      if (localStorage && localStorage.setItem) {
-        localStorage.setItem(userIdLocalKey, userId);
-        localStorage.setItem(tokenLocalKey, token);
-      }
-    }
   }
 
   function destroySession() {
+    destroyToken(api.token);
     api.userId = null;
     api.token = null;
-    var localStorage = window.localStorage;
-    if (localStorage && localStorage.removeItem) {
-      localStorage.removeItem(userIdLocalKey);
-      localStorage.removeItem(tokenLocalKey);
-    }
   }
 
   function matchInvitationsToUser(user) {
@@ -113,33 +92,24 @@ var patch = function(mock, api) {
     });
   }
 
-  api.user.loadSession = function(callback) {
-    var userId;
-    var token;
-    var localStorage = window.localStorage;
-
-    if (getParam('auth.skip')) {
-      api.log('[mock] Skipping auth');
-      userId = data.defaultUserId;
-      token = generateTokenId();
-      addToken(userId, token);
-      saveSession(userId, token);
-      setTimeout(callback, getDelayFor('auth.loadsession'));
-      return;
-    }
-
-    if (localStorage && localStorage.getItem) {
-      userId = localStorage.getItem(userIdLocalKey);
-      token = localStorage.getItem(tokenLocalKey);
-      if (userId && token && isValidToken(userId, token)) {
-        saveSession(userId, token);
+  api.user.loadSession = function(token, callback) {
+    setTimeout(function() {
+      var user = userForToken(token);
+      if (!user) {
+        return callback();
       }
-      setTimeout(callback, getDelayFor('auth.loadsession'));
-    }
-    else {
-      setTimeout(callback, getDelayFor('auth.loadsession'));
-    }
-    api.log('[mock] Session loaded');
+
+      user = _.cloneDeep(user);
+      user = _.omit(user, 'password');
+
+      saveSession(user.userid, token);
+      callback(null, {
+        token: token,
+        user: user
+      });
+
+      api.log('[mock] Session loaded');
+    }, getDelayFor('auth.loadsession'));
   };
 
   api.user.destroySession = destroySession;
@@ -148,16 +118,9 @@ var patch = function(mock, api) {
     return Boolean(api.userId && api.token);
   };
 
-  api.user.login = function(user, options, callback) {
+  api.user.login = function(user, callback) {
     var username = user.username;
     var password = user.password;
-
-    // Allow to not pass options object
-    options = options || {};
-    if (typeof options === 'function') {
-      callback = options;
-      options = {};
-    }
 
     setTimeout(function() {
       var err;
@@ -168,8 +131,7 @@ var patch = function(mock, api) {
       if (!err) {
         var userId = user.userid;
         var token = generateTokenId();
-        addToken(userId, token);
-        saveSession(userId, token, options);
+        saveSession(userId, token);
         api.log('[mock] Login success');
       }
       else {
@@ -186,7 +148,6 @@ var patch = function(mock, api) {
         err = {status: 500, response: 'Logout failed, please try again.'};
       }
       if (!err) {
-        destroyToken(api.userId, api.token);
         destroySession();
         api.log('[mock] Logout success');
       }
@@ -213,7 +174,6 @@ var patch = function(mock, api) {
         addUser(user);
 
         var token = generateTokenId();
-        addToken(user.userid, token);
         saveSession(user.userid, token);
 
         matchInvitationsToUser(user);

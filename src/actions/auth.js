@@ -20,7 +20,7 @@ ns.login = function(user, options) {
   };
 
   db.set(['auth', 'reqs', 'login'], req);
-  api.user.login(user, options, function(err) {
+  api.user.login(user, function(err) {
     if (err) return handleError(err);
 
     api.user.get(function(err, user) {
@@ -32,6 +32,7 @@ ns.login = function(user, options) {
           token: api.token,
           user: user
         })],
+        [['auth', 'persist'], options.remember],
         [['auth', 'reqs', 'logout'], null]
       ]);
       RoutingActions.navigateAfterLogin();
