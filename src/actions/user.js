@@ -59,4 +59,31 @@ ns.fetch = function() {
   return req;
 };
 
+ns.get = function(userId) {
+  var reqKey = ['users', userId, 'get'].join(':');
+
+  if (db.get(['reqs', reqKey, 'status']) === 'pending') {
+    return null;
+  }
+
+  var req = request.create();
+  var handleError = function(err) {
+    db.transact([
+      [['reqs', reqKey], m.merge(req, m.hash_map('status', 'error', 'error', m.js_to_clj(err)))],
+    ]);
+  };
+
+  db.set(['reqs', reqKey], req);
+  api.patient.get(userId, function(err, user) {
+    if (err) return handleError(err);
+
+    db.transact([
+      [['reqs', reqKey], m.assoc(req, 'status', 'success')],
+      [['users', userId], m.js_to_clj(user)]
+    ]);
+  });
+
+  return req;
+};
+
 module.exports = ns;

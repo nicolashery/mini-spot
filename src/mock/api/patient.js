@@ -112,7 +112,7 @@ var patch = function(mock, api) {
       }
 
       callback(null, patient);
-    }, getDelayFor('api.patient.get'));
+    }, getDelayFor('api.patient.get') || 1000);
   };
 
   api.patient.post = function(patient, callback) {

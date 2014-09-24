@@ -10,6 +10,7 @@ var DbMixin = require('./lib/DbMixin');
 var Navbar = require('./controllers/Navbar');
 var Login = require('./controllers/Login');
 var Users = require('./controllers/Users');
+var UserNav = require('./controllers/UserNav');
 var DeviceData = require('./controllers/DeviceData');
 
 var RequestActions = require('./actions/request');
@@ -57,6 +58,7 @@ router.applyRedirects = function(route) {
 
 router.beforeRouteChange = function(route) {
   var path = route && route.path;
+  var reqKey;
 
   if (path === '/login') {
     RequestActions.reset('auth:login');
@@ -72,10 +74,13 @@ router.beforeRouteChange = function(route) {
   var userId;
   if (/^\/user\/:userId/.test(path)) {
     userId = route.params && route.params.userId;
+    reqKey = ['users', userId, 'get'].join(':');
+    RequestActions.reset(reqKey);
+    UserActions.get(userId);
   }
 
   if (path ==='/user/:userId/data') {
-    var reqKey = ['deviceData', userId, 'fetch'].join(':');
+    reqKey = ['deviceData', userId, 'fetch'].join(':');
     RequestActions.reset(reqKey);
     DeviceDataActions.fetch(userId);
     return;
@@ -126,12 +131,17 @@ var App = React.createClass({
       );
     }
 
+    var userId;
+    if (/^\/user\/:userId/.test(path)) {
+      userId = m.get_in(this.state.route, ['params', 'userId']);
+    }
+
     if (path === '/user/:userId/data') {
       return (
         <div>
+          <UserNav userId={userId} />
           <h2>Data</h2>
-          <DeviceData
-            userId={m.get_in(this.state.route, ['params', 'userId'])} />
+          <DeviceData userId={userId} />
         </div>
       );
     }
