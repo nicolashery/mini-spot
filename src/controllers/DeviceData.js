@@ -1,9 +1,9 @@
 /** @jsx React.DOM */
 var React = require('react');
 var m = require('mori');
-var db = require('../state/db');
 var DbMixin = require('../lib/DbMixin');
 var DeviceDataActions = require('../actions/deviceData');
+var DataSummaryView = require('../state/views/DataSummary');
 
 var debug = require('bows')('DeviceData');
 
@@ -12,12 +12,12 @@ var DeviceData = React.createClass({
     userId: React.PropTypes.string
   },
 
-  mixins: [DbMixin(db)],
+  mixins: [DbMixin(DataSummaryView)],
   stateFromDb: function(props) {
     var userId = props.userId;
     var reqKey = ['deviceData', userId, 'fetch'].join(':');
     return {
-      deviceData: ['deviceData', userId],
+      summary: ['summaries', userId],
       fetchReq: ['reqs', reqKey]
     };
   },
@@ -55,14 +55,14 @@ var DeviceData = React.createClass({
   isLoading: function() {
     return (
       m.get(this.state.fetchReq, 'status') === 'pending' &&
-      m.count(this.state.deviceData) === 0
+      m.equals(this.state.summary, null)
     );
   },
 
   isRefreshing: function() {
     return (
       m.get(this.state.fetchReq, 'status') === 'pending' &&
-      m.count(this.state.deviceData) > 0
+      !m.equals(this.state.summary, null)
     );
   },
 
@@ -76,7 +76,7 @@ var DeviceData = React.createClass({
       return <p>Loading data...</p>;
     }
 
-    return <p>Count: <strong>{m.count(this.state.deviceData)}</strong></p>;
+    return <p>Count: <strong>{this.state.summary}</strong></p>;
   }
 });
 
