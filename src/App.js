@@ -11,6 +11,7 @@ var Navbar = require('./controllers/Navbar');
 var Login = require('./controllers/Login');
 var Users = require('./controllers/Users');
 var UserNav = require('./controllers/UserNav');
+var Profile = require('./controllers/Profile');
 var DeviceData = require('./controllers/DeviceData');
 
 var RequestActions = require('./actions/request');
@@ -26,6 +27,7 @@ router.setMatchedPaths([
   '/dashboard',
   '/user/:userId',
   '/user/:userId/data',
+  '/user/:userId/profile',
   '/404'
 ]);
 
@@ -142,6 +144,16 @@ var App = React.createClass({
           <UserNav userId={userId} />
           <h2>Data</h2>
           <DeviceData userId={userId} />
+        </div>
+      );
+    }
+
+    if (path === '/user/:userId/profile') {
+      return (
+        <div>
+          <UserNav userId={userId} />
+          <h2>Profile</h2>
+          <Profile userId={userId} />
         </div>
       );
     }

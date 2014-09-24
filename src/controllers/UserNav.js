@@ -32,8 +32,8 @@ var UserNav = React.createClass({
   render: function() {
     debug('render');
 
-    if (this.isReqPending()) {
-      return null;
+    if (this.isLoading()) {
+      return <p>&nbsp;</p>;
     }
 
     var userId = m.get(this.state.user, 'userid');
@@ -50,8 +50,11 @@ var UserNav = React.createClass({
     );
   },
 
-  isReqPending: function() {
-    return m.get(this.state.getReq, 'status') === 'pending';
+  isLoading: function() {
+    return (
+      m.get(this.state.getReq, 'status') === 'pending' &&
+      !this.state.user
+    );
   }
 });
 
