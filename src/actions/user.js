@@ -2,6 +2,7 @@ var m = require('mori');
 var api = require('../api');
 var db = require('../state/db');
 var request = require('../lib/request');
+var RoutingActions = require('./routing');
 
 var ns = {};
 
@@ -75,7 +76,12 @@ ns.get = function(userId) {
 
   db.set(['reqs', reqKey], req);
   api.patient.get(userId, function(err, user) {
-    if (err) return handleError(err);
+    if (err) {
+      if (err.status === 404) {
+        RoutingActions.navigateToNotFound();
+      }
+      return handleError(err);
+    }
 
     db.transact([
       [['reqs', reqKey], m.assoc(req, 'status', 'success')],

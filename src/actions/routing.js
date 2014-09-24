@@ -58,4 +58,8 @@ ns.navigateAfterLogout = function() {
   this.navigateTo(router.defaultNoAuthRoute());
 };
 
+ns.navigateToNotFound = function() {
+  this.navigateTo(router.notFoundRoute());
+};
+
 module.exports = ns;
