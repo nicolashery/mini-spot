@@ -74,6 +74,8 @@ var Users = React.createClass({
       return <p>No users found.</p>;
     }
 
+    var users = m.vals(this.state.users);
+    users = m.sort(this.compareUsers, users);
     var nodes = m.map(function(user) {
       return m.hash_map(
         'key', m.get(user, 'userid'),
@@ -81,7 +83,7 @@ var Users = React.createClass({
         'href', '#/user/' + m.get(user, 'userid'),
         'permissions', m.keys(m.get(user, 'permissions'))
       );
-    }, this.state.users);
+    }, users);
     nodes = m.clj_to_js(nodes);
     nodes = nodes.map(function(node) {
       var permissions = node.permissions.join(', ');
@@ -94,6 +96,12 @@ var Users = React.createClass({
     });
 
     return <ul>{nodes}</ul>;
+  },
+
+  compareUsers: function(user1, user2) {
+    var name1 = m.get_in(user1, ['profile', 'fullName']);
+    var name2 = m.get_in(user2, ['profile', 'fullName']);
+    return name1 < name2;
   }
 });
 

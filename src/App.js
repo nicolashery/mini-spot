@@ -60,18 +60,25 @@ router.beforeRouteChange = function(route) {
 
   if (path === '/login') {
     RequestActions.reset('auth:login');
+    return;
   }
 
   if (path ==='/dashboard') {
     RequestActions.reset('users:fetch');
     UserActions.fetch();
+    return;
+  }
+
+  var userId;
+  if (/^\/user\/:userId/.test(path)) {
+    userId = route.params && route.params.userId;
   }
 
   if (path ==='/user/:userId/data') {
-    var userId = route.params && route.params.userId;
     var reqKey = ['deviceData', userId, 'fetch'].join(':');
     RequestActions.reset(reqKey);
     DeviceDataActions.fetch(userId);
+    return;
   }
 };
 

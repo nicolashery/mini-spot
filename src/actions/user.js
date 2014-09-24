@@ -5,6 +5,30 @@ var request = require('../lib/request');
 
 var ns = {};
 
+// Update "long" user with a "short" user object
+// but don't loose existing "long" user attributes
+ns._mergeIntoLongUser = function(longUser, shortUser) {
+  var team = m.get(longUser, 'team');
+  if (!team) {
+    return shortUser;
+  }
+  return m.assoc(shortUser, 'team', team);
+};
+
+// Update a db user map with a list of short users
+ns._updateWithShortUsers = function(users, shortUsers) {
+  var oldUsers = users || m.hash_map();
+  var newUsers = m.reduce(function(acc, user) {
+    var userId = m.get(user, 'userid');
+    var oldUser = m.get(oldUsers, userId);
+    if (oldUser) {
+      user = ns._mergeIntoLongUser(oldUser, user);
+    }
+    return m.assoc(acc, userId, user);
+  }, m.hash_map(), shortUsers);
+  return newUsers;
+};
+
 ns.fetch = function() {
   var reqKey = ['users', 'fetch'].join(':');
 
@@ -23,9 +47,12 @@ ns.fetch = function() {
   api.patient.getAll(function(err, users) {
     if (err) return handleError(err);
 
+    users = m.js_to_clj(users);
+    users = ns._updateWithShortUsers(db.get('users'), users);
+
     db.transact([
       [['reqs', reqKey], m.assoc(req, 'status', 'success')],
-      [['users'], m.js_to_clj(users)]
+      [['users'], users]
     ]);
   });
 
