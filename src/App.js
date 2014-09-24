@@ -7,6 +7,7 @@ var db = require('./state/db');
 var router = require('./router');
 var DbMixin = require('./lib/DbMixin');
 
+var ReqError = require('./controllers/ReqError');
 var Navbar = require('./controllers/Navbar');
 var Login = require('./controllers/Login');
 var Users = require('./controllers/Users');
@@ -107,6 +108,7 @@ var App = React.createClass({
     debug('render');
     return (
       <div>
+        <ReqError />
         <Navbar />
         {this.renderContent()}
       </div>
