@@ -2,7 +2,7 @@
 var React = require('react');
 var m = require('mori');
 var DbMixin = require('../lib/DbMixin');
-var DeviceDataActions = require('../actions/deviceData');
+var DeviceDataActions = require('../actions/DeviceData');
 var DataSummaryView = require('../state/views/DataSummary');
 
 var debug = require('bows')('DeviceData');

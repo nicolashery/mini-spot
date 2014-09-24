@@ -2,7 +2,7 @@ var m = require('mori');
 var api = require('../api');
 var db = require('../state/db');
 var request = require('../lib/request');
-var RoutingActions = require('./routing');
+var RoutingActions = require('./Routing');
 
 var ns = {};
 

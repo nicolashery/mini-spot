@@ -3,7 +3,7 @@ var api = require('../api');
 var db = require('../state/db');
 var persist = require('../lib/persist');
 var request = require('../lib/request');
-var RoutingActions = require('./routing');
+var RoutingActions = require('./Routing');
 
 var ns = {};
 

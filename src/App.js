@@ -14,9 +14,9 @@ var UserNav = require('./controllers/UserNav');
 var Profile = require('./controllers/Profile');
 var DeviceData = require('./controllers/DeviceData');
 
-var RequestActions = require('./actions/request');
-var UserActions = require('./actions/user');
-var DeviceDataActions = require('./actions/deviceData');
+var RequestActions = require('./actions/Request');
+var UserActions = require('./actions/User');
+var DeviceDataActions = require('./actions/DeviceData');
 
 var debug = require('bows')('App');
 

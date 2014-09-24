@@ -3,7 +3,7 @@ var React = require('react');
 var m = require('mori');
 var db = require('../state/db');
 var DbMixin = require('../lib/DbMixin');
-var UserActions = require('../actions/user');
+var UserActions = require('../actions/User');
 
 var debug = require('bows')('Profile');
 

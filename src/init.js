@@ -4,8 +4,8 @@ var router = require('./router');
 var api = require('./api');
 var mock = require('./mock');
 var db = require('./state/db');
-var AuthActions = require('./actions/auth');
-var RoutingActions = require('./actions/routing');
+var AuthActions = require('./actions/Auth');
+var RoutingActions = require('./actions/Routing');
 
 module.exports = function(callback) {
   router.setOnChangeHandler(function(uri, route) {
