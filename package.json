@@ -14,7 +14,6 @@
     "gulp": "^3.8.8",
     "gulp-jshint": "^1.8.4",
     "gulp-react": "^1.0.2",
-    "http-server": "^0.7.1",
     "jshint-stylish": "^1.0.0",
     "json-loader": "^0.5.1",
     "jsx-loader": "^0.11.0",
@@ -31,9 +30,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --devtool source-map --cache --colors --progress",
     "build": "node build",
-    "server": "http-server ./dist",
+    "server": "divshot server -p 8080",
     "jshint": "gulp jshint",
-    "jshint-watch": "gulp jshint-watch",
-    "gh-pages": "node ghpages"
+    "jshint-watch": "gulp jshint-watch"
   }
 }
