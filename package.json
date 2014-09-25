@@ -28,7 +28,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run build-env && webpack-dev-server --devtool source-map --cache --colors --progress",
+    "start": "npm run build-env && webpack-dev-server --devtool eval-source-map --cache --colors --progress",
     "build-env": "node scripts/buildenv",
     "build": "node scripts/build",
     "server": "npm run build-env && divshot server -p 8080",
