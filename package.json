@@ -34,6 +34,7 @@
     "build-env": "node scripts/buildenv",
     "build": "node scripts/build",
     "server": "npm run build-env && divshot server -p 8080",
+    "deploy": "divshot push",
     "jshint": "gulp jshint",
     "jshint-watch": "gulp jshint-watch"
   }

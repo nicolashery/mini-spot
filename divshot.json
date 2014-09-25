@@ -1,5 +1,5 @@
 {
-  "name": "demo-mini-blip",
+  "name": "mini-blip",
   "root": "./dist",
   "clean_urls": true,
   "cache_control": {},
