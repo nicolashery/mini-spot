@@ -16,7 +16,7 @@ ns._destroySession = function() {
   persist.destroy();
 };
 
-ns.load = function() {
+ns.load = function(apiUrl) {
   var reqKey = ['auth', 'load'].join(':');
 
   if (db.get(['reqs', reqKey, 'status']) === 'pending') {
@@ -34,7 +34,10 @@ ns.load = function() {
   var token = m.get_in(savedState, ['auth', 'token']);
   db.set(['reqs', reqKey], req);
 
-  api.init(token, function(err, auth) {
+  api.init({
+    url: apiUrl,
+    token: token
+  }, function(err, auth) {
     if (err) return handleError(err);
 
     var tx = [
@@ -73,7 +76,7 @@ ns.login = function(user, options) {
   };
 
   db.set(['reqs', reqKey], req);
-  api.user.login(user, function(err) {
+  api.user.login(user, options, function(err) {
     if (err) return handleError(err);
 
     api.user.get(function(err, user) {

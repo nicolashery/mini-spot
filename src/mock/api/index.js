@@ -39,11 +39,12 @@ var patch = function(mock, api) {
     return 'about:blank';
   };
 
-  api.init = function(token, callback) {
+  api.init = function(options, callback) {
+    var token = options.token;
     if (!token) {
       return callback();
     }
-    
+
     api.user.loadSession(token, function(err, auth) {
       api.log('[mock] Initialized');
       callback(err, auth);

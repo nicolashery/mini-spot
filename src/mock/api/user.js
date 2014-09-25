@@ -118,7 +118,7 @@ var patch = function(mock, api) {
     return Boolean(api.userId && api.token);
   };
 
-  api.user.login = function(user, callback) {
+  api.user.login = function(user, options, callback) {
     var username = user.username;
     var password = user.password;
 

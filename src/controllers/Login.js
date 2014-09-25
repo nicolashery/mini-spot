@@ -30,10 +30,9 @@ var Login = React.createClass({
     return (
       <div>
         {this.renderRedirectAfterLogin()}
-        <p>Hint: demo/demo</p>
         <form>
           <p><input ref="username" placeholder="username"/></p>
-          <p><input ref="password" placeholder="password"/></p>
+          <p><input ref="password" type="password" placeholder="password"/></p>
           <p><input ref="remember" type="checkbox"/><span> Remember me</span></p>
           <p>{this.renderButton()}</p>
         </form>
@@ -91,7 +90,7 @@ var Login = React.createClass({
       return null;
     }
 
-    return 'Login failed. ' + m.get(error, 'response');
+    return 'Login failed. ' + m.get(error, 'response', '');
   }
 });
 

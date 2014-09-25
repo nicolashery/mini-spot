@@ -7,13 +7,19 @@ var db = require('./state/db');
 var AuthActions = require('./actions/Auth');
 var RoutingActions = require('./actions/Routing');
 
+var env = window.__env;
+
 module.exports = function(callback) {
+  var apiUrl = env.API_URL;
+
   router.setOnChangeHandler(function(uri, route) {
     RoutingActions.navigateTo(route);
   });
 
-  mock.init({});
-  api = mock.patchApi(api);
+  if (!apiUrl || apiUrl === 'mock') {
+    mock.init({});
+    api = mock.patchApi(api);
+  }
 
   function onDbChange(oldState, newState) {
     if (m.get_in(oldState, ['reqs', 'auth:load', 'status']) === 'pending' &&
@@ -25,5 +31,5 @@ module.exports = function(callback) {
   }
   db.listen(onDbChange);
 
-  AuthActions.load();
+  AuthActions.load(apiUrl);
 };
