@@ -20,7 +20,6 @@ function getBundleFilename() {
 console.log('Copying "index.html"...');
 var indexHtml = fs.readFileSync('index.html', 'utf8');
 indexHtml = indexHtml.replace('bundle.js', getBundleFilename());
-indexHtml = indexHtml.replace('<!-- env -->', '<script src="/__/env.js"></script>');
 indexHtml.to('dist/index.html');
 
 console.log('Build successfull');

@@ -28,9 +28,10 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --devtool source-map --cache --colors --progress",
-    "build": "node build",
-    "server": "divshot server -p 8080",
+    "start": "npm run build-env && webpack-dev-server --devtool source-map --cache --colors --progress",
+    "build-env": "node scripts/buildenv",
+    "build": "node scripts/build",
+    "server": "npm run build-env && divshot server -p 8080",
     "jshint": "gulp jshint",
     "jshint-watch": "gulp jshint-watch"
   }

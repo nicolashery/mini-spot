@@ -16,3 +16,5 @@ npm-debug.log
 tmp
 dist
 .divshot-cache
+__
+.env.json
