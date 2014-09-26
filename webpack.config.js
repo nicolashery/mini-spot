@@ -1,6 +1,6 @@
 var path = require('path');
 
-module.exports = {
+var config = {
   entry: './src/main.js',
   output: {
     path: path.join(__dirname, '/dist'),
@@ -14,3 +14,13 @@ module.exports = {
     ]
   }
 };
+
+// If not in mock mode, don't bundle all the mock data
+var apiUrl = process.env.API_URL;
+if (apiUrl && apiUrl !== 'mock') {
+  config.externals = [
+    {'blip-mock-data': '{}'}
+  ];
+}
+
+module.exports = config;
