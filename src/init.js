@@ -2,7 +2,7 @@ var m = require('mori');
 
 var router = require('./router');
 var api = require('./api');
-var mock = require('./mock');
+var mockApi = require('./api/mock');
 var db = require('./state/db');
 var AuthActions = require('./actions/Auth');
 var RoutingActions = require('./actions/Routing');
@@ -17,13 +17,12 @@ module.exports = function(callback) {
   });
 
   if (!apiUrl || apiUrl === 'mock') {
-    mock.init({});
-    api = mock.patchApi(api);
+    mockApi(api);
   }
 
   function onDbChange(oldState, newState) {
     if (m.get_in(oldState, ['reqs', 'auth:load', 'status']) === 'pending' &&
-        m.get_in(newState, ['reqs', 'auth:load', 'status']) === 'success') {
+        m.get_in(newState, ['reqs', 'auth:load', 'status']) !== 'pending') {
       router.start();
       callback();
       db.unlisten(onDbChange);

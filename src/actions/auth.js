@@ -16,6 +16,11 @@ ns._destroySession = function() {
   persist.destroy();
 };
 
+ns._refreshToken = function(token) {
+  db.set(['auth', 'token'], token);
+  ns._saveSession();
+};
+
 ns.load = function(apiUrl) {
   var reqKey = ['auth', 'load'].join(':');
 
@@ -35,7 +40,10 @@ ns.load = function(apiUrl) {
   db.set(['reqs', reqKey], req);
 
   api.init({
-    url: apiUrl,
+    config: {
+      host: apiUrl,
+      onTokenRefresh: ns._refreshToken
+    },
     token: token
   }, function(err, auth) {
     if (err) return handleError(err);
@@ -60,7 +68,7 @@ ns.load = function(apiUrl) {
   return req;
 };
 
-ns.login = function(user, options) {
+ns.login = function(credentials, options) {
   var reqKey = ['auth', 'login'].join(':');
 
   if (db.get(['reqs', reqKey, 'status']) === 'pending') {
@@ -76,27 +84,22 @@ ns.login = function(user, options) {
   };
 
   db.set(['reqs', reqKey], req);
-  api.user.login(user, options, function(err) {
+  api.auth.login(credentials, function(err, auth) {
     if (err) return handleError(err);
 
-    api.user.get(function(err, user) {
-      if (err) return handleError(err);
+    auth = m.js_to_clj(auth);
+    auth = m.assoc(auth, 'persist', options.remember);
 
-      db.transact([
-        [['reqs', reqKey], m.assoc(req, 'status', 'success')],
-        ['auth', m.js_to_clj({
-          token: api.token,
-          user: user,
-          persist: options.remember
-        })],
-        [['reqs', 'auth:logout'], null]
-      ]);
+    db.transact([
+      [['reqs', reqKey], m.assoc(req, 'status', 'success')],
+      ['auth', auth],
+      [['reqs', 'auth:logout'], null]
+    ]);
 
-      if (options.remember) {
-        ns._saveSession();
-      }
-      RoutingActions.navigateAfterLogin();
-    });
+    if (options.remember) {
+      ns._saveSession();
+    }
+    RoutingActions.navigateAfterLogin();
   });
 
   return req;
@@ -117,7 +120,7 @@ ns.logout = function() {
   };
 
   db.set(['reqs', reqKey], req);
-  api.user.logout(function(err) {
+  api.auth.logout(function(err) {
     if (err) return handleError(err);
 
     var state = m.assoc_in(m.hash_map(),

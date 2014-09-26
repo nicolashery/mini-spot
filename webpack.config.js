@@ -22,5 +22,8 @@ if (apiUrl && apiUrl !== 'mock') {
     {'blip-mock-data': '{}'}
   ];
 }
+else {
+  console.log('Webpack: Bundling MOCK data...');
+}
 
 module.exports = config;

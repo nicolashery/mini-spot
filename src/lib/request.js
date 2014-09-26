@@ -1,5 +1,5 @@
 var m = require('mori');
-var generateRandomId = require('../mock/api/common').generateRandomId;
+var generateRandomId = require('./generateRandomId');
 
 module.exports = {
   create: function() {

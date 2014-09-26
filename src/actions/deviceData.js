@@ -20,7 +20,7 @@ ns.fetch = function(userId) {
   };
 
   db.set(['reqs', reqKey], req);
-  api.patientData.get(userId, function(err, deviceData) {
+  api.deviceData.get(userId, function(err, deviceData) {
     if (err) return handleError(err);
 
     db.transact([

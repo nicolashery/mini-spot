@@ -90,7 +90,7 @@ var Login = React.createClass({
       return null;
     }
 
-    return 'Login failed. ' + m.get(error, 'response', '');
+    return 'Login failed. ' + m.get(error, 'body', '');
   }
 });
 

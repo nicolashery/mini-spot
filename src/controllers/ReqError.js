@@ -37,7 +37,7 @@ var ReqError = React.createClass({
     var nodes = m.map(function(req) {
       return m.hash_map(
         'key', m.get(req, 'id'),
-        'error', m.get_in(req, ['error', 'response'], 'No message')
+        'error', m.get_in(req, ['error', 'body'], 'No message')
       );
     }, reqs);
     nodes = m.clj_to_js(nodes);

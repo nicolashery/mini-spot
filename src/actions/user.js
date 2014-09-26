@@ -45,7 +45,7 @@ ns.fetch = function() {
   };
 
   db.set(['reqs', reqKey], req);
-  api.patient.getAll(function(err, users) {
+  api.users.fetch(function(err, users) {
     if (err) return handleError(err);
 
     users = m.js_to_clj(users);
@@ -75,7 +75,7 @@ ns.get = function(userId) {
   };
 
   db.set(['reqs', reqKey], req);
-  api.patient.get(userId, function(err, user) {
+  api.users.get(userId, function(err, user) {
     if (err) {
       if (err.status === 404) {
         RoutingActions.navigateToNotFound();

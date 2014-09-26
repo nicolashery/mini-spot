@@ -24,7 +24,6 @@ window.React = React;
 window.api = require('./api');
 window.db = db;
 window.m = m;
-window.mock = require('./mock');
 
 init(function() {
   window.app = React.renderComponent(App(), document.body);
