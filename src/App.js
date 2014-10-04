@@ -123,7 +123,13 @@ var App = React.createClass({
     }
 
     if (path === '/about') {
-      return <p>About</p>;
+      return (
+        <p>
+          <a href="https://github.com/nicolashery/mini-spot" target="_blank">
+          {'https://github.com/nicolashery/mini-spot'}
+          </a>
+        </p>
+      );
     }
 
     if (path === '/dashboard') {

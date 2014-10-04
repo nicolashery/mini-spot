@@ -1,5 +1,5 @@
 {
-  "name": "mini-blip",
+  "name": "mini-spot",
   "root": "./dist",
   "clean_urls": true,
   "cache_control": {},
