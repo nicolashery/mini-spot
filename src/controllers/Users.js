@@ -4,6 +4,7 @@ var m = require('mori');
 var db = require('../state/db');
 var DbMixin = require('../lib/DbMixin');
 var UserActions = require('../actions/User');
+var UserListItem = require('../elements/UserListItem');
 
 var debug = require('bows')('Users');
 
@@ -86,13 +87,13 @@ var Users = React.createClass({
     }, users);
     nodes = m.clj_to_js(nodes);
     nodes = nodes.map(function(node) {
-      var permissions = node.permissions.join(', ');
       return (
-        <li key={node.key}>
-          <a href={node.href}>{node.fullName}</a>
-          <span> ({permissions})</span>
-        </li>
-      );
+        <UserListItem
+          key={node.key}
+          fullName={node.fullName}
+          href={node.href}
+          permissions={node.permissions} />
+        );
     });
 
     return <ul>{nodes}</ul>;
